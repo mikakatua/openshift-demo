@@ -1,0 +1,4 @@
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+Openshift-21b31bd54421.json
