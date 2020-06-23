@@ -1,15 +1,14 @@
 #!/bin/bash
 
 # Setup ansible inventory
-
-cp -f $1/config/ansible-hosts /etc/ansible/hosts
+INVENTORY="$(dirname $(readlink -f $0))/../config/ansible-hosts"
 
 # Run the RPM-based Installer
-
 git clone -b release-3.11 https://github.com/openshift/openshift-ansible
 
-cd openshift-ansible
+export ANSIBLE_HOST_KEY_CHECKING=False
+ansible-playbook -i $INVENTORY ~/openshift-ansible/playbooks/prerequisites.yml
+[ $? -eq 0 ] && ansible-playbook -i $INVENTORY ~/openshift-ansible/playbooks/deploy_cluster.yml
 
-ansible-playbook playbooks/prerequisites.yml
-ansible-playbook playbooks/deploy-cluster.yml
-
+# Uninstall OKD cluster
+#ansible-playbook -i $INVENTORY ~/openshift-ansible/playbooks/adhoc/uninstall.yml

@@ -17,7 +17,7 @@ resource "google_compute_subnetwork" "subnet1" {
 }
 
 resource "google_compute_firewall" "fw-rule1" {
-  name      = "allow-ssh"
+  name      = "common-rules"
   network   = google_compute_network.vpc_network.id
 
   allow {
@@ -33,7 +33,7 @@ resource "google_compute_firewall" "fw-rule1" {
 }
 
 resource "google_compute_firewall" "fw-rule2" {
-  name      = "allow-subnet1"
+  name      = "subnet-rules"
   network   = google_compute_network.vpc_network.id
 
   allow {
@@ -41,6 +41,19 @@ resource "google_compute_firewall" "fw-rule2" {
   }
 
   source_ranges = ["192.168.122.0/24"]
+}
+
+resource "google_compute_firewall" "fw-rule3" {
+  name      = "master-rules"
+  network   = google_compute_network.vpc_network.id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["8443"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags = [ "master" ]
 }
 
 resource "google_compute_disk" "docker_volume" {
@@ -54,6 +67,7 @@ resource "google_compute_instance" "master" {
   machine_type = "n1-standard-4"
   zone         = "europe-west4-a"
   allow_stopping_for_update = true
+  tags = [ "master" ]
 
   boot_disk {
     initialize_params {
@@ -115,6 +129,8 @@ resource "google_compute_instance" "nodes" {
   network_interface {
     subnetwork       = google_compute_subnetwork.subnet1.id
     network_ip       = "192.168.122.10${count.index+1}"
+    access_config {
+    }
   }
 }
 
