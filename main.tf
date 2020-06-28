@@ -49,7 +49,7 @@ resource "google_compute_firewall" "fw-rule3" {
 
   allow {
     protocol = "tcp"
-    ports    = ["8443"]
+    ports    = ["8443", "80"]
   }
 
   source_ranges = ["0.0.0.0/0"]

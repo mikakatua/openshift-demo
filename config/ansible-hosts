@@ -10,7 +10,11 @@ openshift_deployment_type=origin
 openshift_portal_net=172.30.0.0/16
 # localhost likely doesn't meet the minimum requirements
 openshift_disable_check=disk_availability,memory_availability
-openshift_node_groups=[{'name': 'node-config-all-in-one', 'labels': ['node-role.kubernetes.io/master=true', 'node-role.kubernetes.io/infra=true', 'node-role.kubernetes.io/compute=true']}, {'name': 'node-config-master-infra', 'labels': ['node-role.kubernetes.io/master=true', 'node-role.kubernetes.io/infra=true']}, {'name': 'node-config-master', 'labels': ['node-role.kubernetes.io/master=true']}, {'name': 'node-config-infra', 'labels': ['node-role.kubernetes.io/infra=true']}, {'name': 'node-config-compute', 'labels': ['node-role.kubernetes.io/compute=true']}]
+
+# This variable overrides the public host name for the cluster. Set here the address of the external load balancer
+openshift_master_cluster_public_hostname=openshift-ansible.public.example.com
+# This variable overrides the default subdomain to use for exposed routes
+openshift_master_default_subdomain=apps.test.example.com
 
 ansible_user=ansible
 ansible_become=true
@@ -24,5 +28,4 @@ master ansible_connection=local
 [nodes]
 # openshift_node_group_name should refer to a dictionary with matching key of name in list openshift_node_groups.
 master openshift_node_group_name='node-config-master-infra'
-node1 openshift_node_group_name='node-config-compute'
-node2 openshift_node_group_name='node-config-compute'
+node[1:2] openshift_node_group_name='node-config-compute'
